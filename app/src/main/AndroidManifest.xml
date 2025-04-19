@@ -1,26 +1,5 @@
-<!--
-    Copyright 2019 Google Inc. All Rights Reserved.
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-         http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
-
-<!-- The "package" attribute is rewritten by the Gradle build with the value of applicationId.
-     It is still required here, as it is used to derive paths, for instance when referring
-     to an Activity by ".MyActivity" instead of the full name. If more Activities are added to the
-     application, the package attribute will need to reflect the correct path in order to use
-     the abbreviated format. -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.placeholder">
+    package="com.eojte.pwa"> <!-- Changed package name -->
 
     <application
         android:allowBackup="true"
@@ -29,18 +8,25 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LauncherActivity">
 
+        <!-- Asset Links (update SHA-256 fingerprint later) -->
         <meta-data
             android:name="asset_statements"
             android:resource="@string/assetStatements" />
+
+        <!-- Chrome OS support -->
         <meta-data
             android:name="cros_web_alternative"
             android:value="@string/crosLaunchUrl" />
 
         <activity android:name="com.google.androidbrowserhelper.trusted.LauncherActivity"
             android:label="@string/appName">
-            <meta-data android:name="android.support.customtabs.trusted.DEFAULT_URL"
-                android:value="@string/launchUrl" />
+            
+            <!-- Your PWA URL -->
+            <meta-data 
+                android:name="android.support.customtabs.trusted.DEFAULT_URL"
+                android:value="https://eojte.github.io/Pwa/" /> <!-- Direct URL -->
 
+            <!-- UI Customization -->
             <meta-data
                 android:name="android.support.customtabs.trusted.STATUS_BAR_COLOR"
                 android:resource="@color/colorPrimary" />
@@ -49,40 +35,53 @@
                 android:name="android.support.customtabs.trusted.NAVIGATION_BAR_COLOR"
                 android:resource="@color/navigationColor" />
 
-            <meta-data android:name="android.support.customtabs.trusted.SPLASH_IMAGE_DRAWABLE"
+            <!-- Splash Screen -->
+            <meta-data 
+                android:name="android.support.customtabs.trusted.SPLASH_IMAGE_DRAWABLE"
                 android:resource="@drawable/splash"/>
 
-            <meta-data android:name="android.support.customtabs.trusted.SPLASH_SCREEN_BACKGROUND_COLOR"
+            <meta-data 
+                android:name="android.support.customtabs.trusted.SPLASH_SCREEN_BACKGROUND_COLOR"
                 android:resource="@color/backgroundColor"/>
 
-            <meta-data android:name="android.support.customtabs.trusted.SPLASH_SCREEN_FADE_OUT_DURATION"
-                android:value="@integer/splashScreenFadeOutDuration"/>
+            <meta-data 
+                android:name="android.support.customtabs.trusted.SPLASH_SCREEN_FADE_OUT_DURATION"
+                android:value="300"/> <!-- 300ms fade (adjust as needed) -->
 
-            <meta-data android:name="android.support.customtabs.trusted.FILE_PROVIDER_AUTHORITY"
-                android:value="@string/providerAuthority"/>
+            <!-- Required for file sharing -->
+            <meta-data 
+                android:name="android.support.customtabs.trusted.FILE_PROVIDER_AUTHORITY"
+                android:value="${applicationId}.fileprovider"/>
 
-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
+            <!-- App Shortcuts -->
+            <meta-data 
+                android:name="android.app.shortcuts" 
+                android:resource="@xml/shortcuts" />
 
+            <!-- Main Launcher Intent -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- Deep Linking -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="https"
-                    android:host="@string/hostName"/>
+                <data 
+                    android:scheme="https"
+                    android:host="eojte.github.io"/> <!-- Must match your domain -->
             </intent-filter>
-
         </activity>
 
+        <!-- Required helper activity -->
         <activity android:name="com.google.androidbrowserhelper.trusted.FocusActivity" />
 
+        <!-- File Provider (for file sharing) -->
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="@string/providerAuthority"
+            android:authorities="${applicationId}.fileprovider"
             android:grantUriPermissions="true"
             android:exported="false">
             <meta-data
@@ -90,16 +89,15 @@
                 android:resource="@xml/filepaths" />
         </provider>
 
+        <!-- Notification Delegation Service -->
         <service
-             android:name="com.google.androidbrowserhelper.trusted.DelegationService"
-             android:enabled="@bool/enableNotification"
-             android:exported="@bool/enableNotification">
-
-             <intent-filter>
-                 <action android:name="android.support.customtabs.trusted.TRUSTED_WEB_ACTIVITY_SERVICE"/>
-                 <category android:name="android.intent.category.DEFAULT"/>
-             </intent-filter>
-         </service>
-
+            android:name="com.google.androidbrowserhelper.trusted.DelegationService"
+            android:enabled="@bool/enableNotification"
+            android:exported="@bool/enableNotification">
+            <intent-filter>
+                <action android:name="android.support.customtabs.trusted.TRUSTED_WEB_ACTIVITY_SERVICE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </service>
     </application>
 </manifest>
